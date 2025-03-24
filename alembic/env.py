@@ -25,6 +25,7 @@ if config.config_file_name is not None:
 config.set_main_option("sqlalchemy.url", DATABASE_URL)
 
 from src.books.models import Book_Model
+from src.auth.models import User_Model
 
 target_metadata = Base.metadata
 
