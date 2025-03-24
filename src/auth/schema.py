@@ -23,3 +23,7 @@ class UserResponseModel(BaseModel):
     class Config:
         from_attributes = True
         arbitrary_types_allowed = True
+
+class UserLoginModel(BaseModel):
+    email: str = Field(max_length=40)
+    password: str  = Field(min_length=6)
