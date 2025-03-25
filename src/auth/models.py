@@ -17,6 +17,7 @@ class User_Model(Base):
     username = Column(String, nullable=False)
     first_name = Column(String, nullable=False)
     last_name = Column(String, nullable=False)
+    role = Column(String, nullable=True, default="user")
     is_verified = Column(Boolean, default=False, nullable=False)
     email = Column(String, nullable=False)
     password_hash = Column(String, nullable=False)

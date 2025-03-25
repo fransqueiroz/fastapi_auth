@@ -3,9 +3,9 @@ import datetime
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import JSONResponse
 
-from src.auth.dependencies import AccessTokenBearer, RefreshTokenBearer
+from src.auth.dependencies import AccessTokenBearer, RefreshTokenBearer, RoleChecker, get_current_user
 from src.auth.models import User_Model
-from src.auth.schema import UserCreateModel, UserLoginModel
+from src.auth.schema import UserBooksModel, UserCreateModel, UserLoginModel
 from src.auth.service import UserService
 from src.auth.utils import create_access_token, verify_password
 from src.database.dependencies import get_db
@@ -14,6 +14,7 @@ from src.database.redis import add_jti_to_blocklist
 
 auth_router = APIRouter()
 user_service = UserService(db=next(get_db()))
+role_checker = RoleChecker(["admin", "user"])
 
 REFRESH_TOKEN_EXPIRY=2
 
@@ -99,3 +100,8 @@ async def create_user_account(
     new_user = await user_service.create_user(user_data)
 
     return new_user
+
+@auth_router.get("/me", response_model=UserBooksModel)
+async def get_current_user(
+    user=Depends(get_current_user), _: bool = Depends(role_checker)):
+    return user

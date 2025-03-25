@@ -16,3 +16,5 @@ async def add_jti_to_blocklist(jti: str) -> None:
 
 async def token_in_blocklist(jti: str) -> bool:
     return await token_blocklist.exists(jti) > 0
+
+# https://jod35.github.io/fastapi-beyond-crud-docs/site/chapter10/

@@ -27,3 +27,17 @@ class UserResponseModel(BaseModel):
 class UserLoginModel(BaseModel):
     email: str = Field(max_length=40)
     password: str  = Field(min_length=6)
+
+class UserBooksModel(BaseModel):
+    uid: str
+    username: str
+    email: str
+    first_name: str
+    last_name: str
+    is_verified: bool
+    created_at: datetime
+    update_at: datetime
+
+    class Config:
+        from_attributes = True
+        arbitrary_types_allowed = True
