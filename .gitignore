@@ -1,0 +1,9 @@
+.coverage
+credentials*
+data/*
+!data/.keep
+*.log
+__pycache__/
+build/
+dist/
+*.lock
