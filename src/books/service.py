@@ -16,12 +16,12 @@ class BookService:
 
     async def get_user_books(self, user_uid: str):
         print(user_uid)
-        return self.db.query(Book_Model).filter(Book_Model.author == user_uid).order_by(desc(Book_Model.created_at)).all()
+        return self.db.query(Book_Model).filter(Book_Model.user_uid == user_uid).order_by(desc(Book_Model.created_at)).all()
 
     async def create_book(self, book_data: BookCreateModel, user_uid: str):
         book_data_dict = book_data.model_dump()
-        book_data_dict["author"] = user_uid
-        new_book = Book_Model(**book_data.model_dump())
+        new_book = Book_Model(**book_data_dict)
+        new_book.user_uid = user_uid
         self.db.add(new_book)
         self.db.commit()
         self.db.refresh(new_book)
