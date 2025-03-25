@@ -72,7 +72,7 @@ async def revoke_token(token_details:dict=Depends(AccessTokenBearer())):
 async def get_new_access_token(token_details: dict = Depends(RefreshTokenBearer())):
     expiry_timestamp = token_details["exp"]
 
-    if datetime.fromtimestamp(expiry_timestamp) > datetime.now():
+    if datetime.datetime.fromtimestamp(expiry_timestamp) > datetime.datetime.now():
         new_access_token = create_access_token(user_data=token_details["user"])
 
         return JSONResponse(content={"access_token": new_access_token})
