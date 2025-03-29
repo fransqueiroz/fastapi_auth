@@ -1,6 +1,8 @@
-from fastapi import Depends
+from fastapi import Depends, HTTPException, status
+from sqlalchemy import desc
 from sqlalchemy.orm import Session
-from src.auth.models import User_Model
+from sqlmodel import select
+from src.database.models import Book_Model, User_Model
 from src.auth.schema import UserCreateModel, UserResponseModel
 from src.auth.utils import generate_password_hash
 from src.database.dependencies import get_db
@@ -11,7 +13,16 @@ class UserService:
         self.db = db
 
     async def get_user_by_email(self, email: str):
-        return self.db.query(User_Model).filter(User_Model.email == email).first()
+        user = self.db.execute(select(User_Model).filter(User_Model.email == email))
+        user = user.scalars().first()
+
+        return user
+
+    async def get_user_by_uid(self, uid: str):
+        user = self.db.execute(select(User_Model).filter(User_Model.uid == uid))
+        user = user.scalars().first()
+
+        return user
 
     async def user_exists(self, email: str):
         user = await self.get_user_by_email(email)
@@ -23,4 +34,15 @@ class UserService:
         self.db.add(new_user)
         self.db.commit()
         self.db.refresh(new_user)
-        return UserResponseModel(**new_user.__dict__)
+        print(f"new_user após refresh: {new_user.__dict__}")
+        return UserResponseModel(
+            uid=new_user.uid,
+            first_name=new_user.first_name,
+            last_name=new_user.last_name,
+            username=new_user.username,
+            email=new_user.email,
+            is_verified=new_user.is_verified,
+            password_hash=new_user.password_hash,
+            created_at=new_user.created_at,
+            update_at=new_user.update_at,
+        )

@@ -2,7 +2,7 @@ from typing import Any, List
 from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
-from src.auth.models import User_Model
+from src.database.models import User_Model
 from src.auth.service import UserService
 from src.auth.utils import decode_token
 from src.database.dependencies import get_db
@@ -67,9 +67,9 @@ class RefreshTokenBearer(TokenBearer):
 async def get_current_user(
     token_details: dict = Depends(AccessTokenBearer()),
 ):
-    user_email = token_details["user"]["email"]
+    user_id = token_details.get("user")["user_uid"]
 
-    user = await user_service.get_user_by_email(user_email)
+    user = await user_service.get_user_by_uid(user_id)
 
     return user
 
@@ -78,6 +78,8 @@ class RoleChecker:
         self.allowed_roles = allowed_roles
 
     def __call__(self, current_user: User_Model = Depends(get_current_user)) -> Any:
+        print(">>>>>>>>>>>>>>>")
+        print(current_user)
         if current_user.role in self.allowed_roles:
             return True
 

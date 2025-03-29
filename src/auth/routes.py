@@ -1,10 +1,10 @@
 from datetime import timedelta
 import datetime
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 from fastapi.responses import JSONResponse
 
 from src.auth.dependencies import AccessTokenBearer, RefreshTokenBearer, RoleChecker, get_current_user
-from src.auth.models import User_Model
+from src.database.models import User_Model
 from src.auth.schema import UserBooksModel, UserCreateModel, UserLoginModel
 from src.auth.service import UserService
 from src.auth.utils import create_access_token, verify_password
@@ -20,7 +20,8 @@ REFRESH_TOKEN_EXPIRY=2
 
 @auth_router.post("/login")
 async def login_users(
-    login_data: UserLoginModel
+    login_data: UserLoginModel,
+    response: Response
 ):
     email = login_data.email
     password = login_data.password
@@ -41,14 +42,26 @@ async def login_users(
                 expiry=timedelta(days=REFRESH_TOKEN_EXPIRY),
             )
 
-            return JSONResponse(
-                content={
-                    "message": "Login successful",
-                    "access_token": access_token,
-                    "refresh_token": refresh_token,
-                    "user": {"email": user.email, "uid": str(user.uid)},
-                }
+            response.set_cookie(
+                key="access_token",
+                value=access_token,
+                httponly=True,
+                secure=True,
+                samesite="Lax"
             )
+
+            response.set_cookie(
+                key="refresh_token",
+                value=refresh_token,
+                httponly=True,
+                secure=True,
+                samesite="Lax"
+            )
+
+            return {
+                "message": "Login successful",
+                "user": {"email": user.email, "uid": str(user.uid)},
+            }
 
     raise HTTPException(
         status_code=status.HTTP_403_FORBIDDEN, detail="Invalid Email Or Password"

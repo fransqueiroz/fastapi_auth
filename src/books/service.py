@@ -1,7 +1,8 @@
+import uuid
 from fastapi import Depends
 from sqlalchemy import desc
 from sqlalchemy.orm import Session
-from src.books.models import Book_Model
+from src.database.models import Book_Model, User_Model
 from src.books.schemas import BookCreateModel
 from src.database.dependencies import get_db
 
@@ -15,13 +16,14 @@ class BookService:
         return self.db.query(Book_Model).order_by(desc(Book_Model.created_at)).all()
 
     async def get_user_books(self, user_uid: str):
-        print(user_uid)
         return self.db.query(Book_Model).filter(Book_Model.user_uid == user_uid).order_by(desc(Book_Model.created_at)).all()
 
     async def create_book(self, book_data: BookCreateModel, user_uid: str):
+
         book_data_dict = book_data.model_dump()
         new_book = Book_Model(**book_data_dict)
         new_book.user_uid = user_uid
+        print(new_book.__dict__)
         self.db.add(new_book)
         self.db.commit()
         self.db.refresh(new_book)

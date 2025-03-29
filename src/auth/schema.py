@@ -25,7 +25,6 @@ class UserCreateModel(BaseModel):
     }
 
 class UserResponseModel(BaseModel):
-    id: int
     uid: str
     first_name: str
     last_name: str

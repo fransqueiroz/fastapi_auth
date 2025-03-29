@@ -1,4 +1,5 @@
 from typing import List
+import uuid
 from fastapi import APIRouter, Depends, HTTPException, status
 from src.auth.dependencies import AccessTokenBearer, RoleChecker
 from src.books.books_data import books

@@ -1,7 +1,7 @@
 import os
 
 DATABASE_URL = os.getenv(
-    "DATABASE_URL", "postgresql://docker:docker@localhost:5432/maga_dados"
+    "DATABASE_URL", "mysql+pymysql://docker:docker@localhost:3306/authdb"
 )
 JWT_SECRET = os.getenv(
     "JWT_SECRET", "e698218fbf1d9d46b06a6c1aa41b3124"

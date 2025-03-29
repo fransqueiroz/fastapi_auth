@@ -1,15 +1,24 @@
 version: '3'
 services:
   fastapi_auth-db:
-    image: bitnami/postgresql
+    image: mysql/mysql-server:latest
+    restart: always
     ports:
-      - 5432:5432
+      - "3306:3306"
     environment:
-      - POSTGRESQL_USERNAME=docker
-      - POSTGRESQL_PASSWORD=docker
-      - POSTGRESQL_DATABASE=maga_dados
+      - MYSQL_ROOT_PASSWORD=docker
+      - MYSQL_DATABASE=authdb
+      - MYSQL_USER=docker
+      - MYSQL_PASSWORD=docker
+    volumes:
+      - mysql-volume:/var/lib/mysql
+
   redis:
     image: redis
-    command: redis-server --requirepass Redis2019!
+    command: redis-server --requirepass "Redis2019!"
     ports:
       - "6379:6379"
+
+volumes:
+  mysql-volume:
+    driver: local
